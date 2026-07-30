@@ -1,0 +1,16 @@
+[
+  {
+    "host": "web-server-01",
+    "service": "CPU Usage",
+    "status": "CRITICAL",
+    "time": "2026-07-16 09:15",
+    "message": "CPU usage above 95%"
+  },
+  {
+    "host": "db-server-01",
+    "service": "Disk Space",
+    "status": "WARNING",
+    "time": "2026-07-16 11:00",
+    "message": "Disk usage at 82%"
+  }
+]

@@ -1,0 +1,15 @@
+[
+  {
+    "id": "INC001",
+    "title": "High CPU on web-server-01",
+    "status": "Open",
+    "priority": "High"
+  },
+  {
+    "id": "INC002",
+    "title": "Disk warning on db-server-01",
+    "status": "In Progress",
+    "priority": "Medium"
+  }
+]
+
