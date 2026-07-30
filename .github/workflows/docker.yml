@@ -29,3 +29,17 @@ jobs:
       - name: Push Docker Image
         run: |
           docker push lalitlt/noc-ai-shift-handover:latest
+
+
+ - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+
+      - name: Deploy to Azure Container Apps
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          containerAppName: noc-ai-dashboard
+          resourceGroup: NOC
+          imageToDeploy: lalitlt/noc-ai-shift-handover:latest
