@@ -1,4 +1,24 @@
 # ==========================================
+# STAGE 1: Compiles dependencies
+# ==========================================
+FROM python:3.12.4-slim AS dependency-compiler
+
+WORKDIR /build
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends build-essential && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir --upgrade pip==24.0 && \
+    pip wheel --no-cache-dir --no-deps --wheel-dir /build/wheels -r requirements.txt
+
+
+# ==========================================
 # STAGE 2: The Final Production Runner
 # ==========================================
 FROM python:3.12.4-slim AS runner
@@ -8,25 +28,21 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Create secure user
 RUN groupadd -r appgroup && useradd -r -g appgroup appuser
 
-# Install runtime utilities AND essential shared libraries (like libffi or libssl)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends curl libffi-dev ssl-cert && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy wheels from Stage 1
-COPY --from=builder /build/wheels /wheels
+# Fixed the reference name here to match Stage 1 perfectly
+COPY --from=dependency-compiler /build/wheels /wheels
 COPY requirements.txt .
 
-# OPTIMIZED INSTALLATION: Let pip safely fallback to binary configurations if a wheel is missing structural runtime binds
 RUN pip install --no-cache-dir --upgrade pip==24.0 && \
     pip install --no-cache-dir --find-links=/wheels -r requirements.txt && \
     rm -rf /wheels
 
-# Copy application source files
 COPY . .
 
 RUN mkdir -p reports data && \
