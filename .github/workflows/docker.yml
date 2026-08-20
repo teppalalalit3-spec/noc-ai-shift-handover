@@ -26,18 +26,16 @@ jobs:
         run: |
           docker build -t lalitlt/noc-ai-shift-handover:latest .
 
+      # Trivy Security Scanner will analyze your built image for vulnerabilities
+      - name: Run Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'lalitlt/noc-ai-shift-handover:latest'
+          format: 'table'
+          exit-code: '1' # This will fail the GitHub job if Critical vulnerabilities are found
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+
       - name: Push Docker Image
         run: |
           docker push lalitlt/noc-ai-shift-handover:latest
-
-      - name: Azure Login
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Deploy to Azure Container Apps
-        uses: azure/container-apps-deploy-action@v2
-        with:
-          containerAppName: noc-ai-dashboard
-          resourceGroup: NOC
-          imageToDeploy: lalitlt/noc-ai-shift-handover:latest
