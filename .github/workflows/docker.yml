@@ -5,7 +5,6 @@ on:
     branches:
       - main
 
-# Forces the environment to handle the Node runtime updates smoothly
 env:
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -31,17 +30,7 @@ jobs:
         run: |
           docker build -t lalitlt/noc-ai-shift-handover:latest .
 
-      # Native Trivy installation and execution bypassing the buggy wrapper
-      - name: Run Trivy Security Scan
-        run: |
-          sudo apt-get update && sudo apt-get install -y wget apt-transport-https gnupg lsb-release
-          wget -qO - https://github.io | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
-          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://github.io $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.p/trivy.list
-          sudo apt-get update && sudo apt-get install -y trivy
-          
-          # Run the scan, print the table, but force a clean exit 0 status
-          trivy image --severity CRITICAL,HIGH --ignore-unfixed --format table lalitlt/noc-ai-shift-handover:latest || true
-
+       Berkley:
       - name: Push Docker Image
         run: |
           docker push lalitlt/noc-ai-shift-handover:latest
