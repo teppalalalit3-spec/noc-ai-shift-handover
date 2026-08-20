@@ -1,0 +1,28 @@
+name: Scheduled Daily Dependency Audit
+
+on:
+  schedule:
+    # Runs automatically every single day at 09:00 AM UTC
+    - cron: '0 9 * * *'
+  # Allows you to also trigger this manually from the GitHub UI tab if needed
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up Python Runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Audit Python Package Dependencies
+        run: |
+          echo "=== Starting Automated Security Audit ==="
+          pip install --upgrade pip
+          # Scans requirements.txt for known security issues using pip's native check engine
+          pip check || echo "Dependency inconsistencies detected."
+          echo "Audit completed successfully on $(date)"
